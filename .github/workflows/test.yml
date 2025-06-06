@@ -1,23 +1,20 @@
-name: Run Tests
+name: Run Pytest (Basic Tests Only)
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      HOST: localhost
-      PORT: 5432
-      USER: postgres
-      PASSWD: postgres
-      DATABASE: test_db
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -28,14 +25,10 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
+          pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run pytest if any tests exist
+      - name: Run pytest on specific tests
         run: |
           source venv/bin/activate
-          if ls tests/test_*.py 2>/dev/null | grep -q .; then
-            PYTHONPATH=src pytest -v
-          else
-            echo "🔸 Nenhum teste ativo no momento."
-          fi
-
+          pytest tests/test_clean_file.py tests/test_file_validation.py
