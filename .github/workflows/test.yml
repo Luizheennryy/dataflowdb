@@ -9,20 +9,29 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      HOST: localhost
+      PORT: 5432
+      USER: postgres
+      PASSWD: postgres
+      DATABASE: test_db
 
     steps:
-      - name: Clonar repositório
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Instalar Python
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
-      - name: Criar e ativar ambiente virtual, instalar dependências e executar testes
+      - name: Install dependencies
         run: |
           python -m venv venv
           source venv/bin/activate
-          pip install --upgrade pip
           pip install -r requirements.txt
-          python -m pytest
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          pytest
+
