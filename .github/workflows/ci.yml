@@ -20,22 +20,14 @@ jobs:
           python-version: '3.11'
 
       - name: Criar ambiente virtual
-        run: python -m venv .venv
+        run: python -m venv venv
 
       - name: Instalar dependências
         run: |
-          .venv/bin/pip install --upgrade pip
-          .venv/bin/pip install -r requirements.txt
+          venv/bin/pip install --upgrade pip
+          venv/bin/pip install -r requirements.txt
 
-      - name: Exportar variáveis de ambiente para Python
-        run: |
-          echo "HOST=${{ secrets.PG_HOST }}" >> $GITHUB_ENV
-          echo "PORT=${{ secrets.PG_PORT }}" >> $GITHUB_ENV
-          echo "USER=${{ secrets.PG_USER }}" >> $GITHUB_ENV
-          echo "PASSWD=${{ secrets.PG_PASSWD }}" >> $GITHUB_ENV
-          echo "DATABASE=${{ secrets.PG_DATABASE }}" >> $GITHUB_ENV
-
-      - name: Rodar testes com pytest (com env exportado)
+      - name: Definir variáveis de ambiente (GitHub Secrets)
         env:
           HOST: ${{ secrets.PG_HOST }}
           PORT: ${{ secrets.PG_PORT }}
@@ -43,5 +35,11 @@ jobs:
           PASSWD: ${{ secrets.PG_PASSWD }}
           DATABASE: ${{ secrets.PG_DATABASE }}
         run: |
-          echo "HOST=$HOST"
-          .venv/bin/pytest
+          echo "HOST=$HOST" >> $GITHUB_ENV
+          echo "PORT=$PORT" >> $GITHUB_ENV
+          echo "USER=$USER" >> $GITHUB_ENV
+          echo "PASSWD=$PASSWD" >> $GITHUB_ENV
+          echo "DATABASE=$DATABASE" >> $GITHUB_ENV
+
+      - name: Rodar testes
+        run: venv/bin/pytest
