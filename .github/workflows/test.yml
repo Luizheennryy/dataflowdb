@@ -19,27 +19,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Criar ambiente virtual
-        run: python -m venv venv
-
-      - name: Instalar dependências
+      - name: Criar e ativar ambiente virtual, instalar dependências e executar testes
         run: |
-          venv/bin/pip install --upgrade pip
-          venv/bin/pip install -r requirements.txt
-
-      - name: Definir variáveis de ambiente (GitHub Secrets)
-        env:
-          HOST: ${{ secrets.PG_HOST }}
-          PORT: ${{ secrets.PG_PORT }}
-          USER: ${{ secrets.PG_USER }}
-          PASSWD: ${{ secrets.PG_PASSWD }}
-          DATABASE: ${{ secrets.PG_DATABASE }}
-        run: |
-          echo "HOST=$HOST" >> $GITHUB_ENV
-          echo "PORT=$PORT" >> $GITHUB_ENV
-          echo "USER=$USER" >> $GITHUB_ENV
-          echo "PASSWD=$PASSWD" >> $GITHUB_ENV
-          echo "DATABASE=$DATABASE" >> $GITHUB_ENV
-
-      - name: Rodar testes
-        run: venv/bin/pytest
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m pytest
