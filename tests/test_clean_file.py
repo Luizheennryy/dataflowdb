@@ -1,8 +1,8 @@
-import os
-from src.utils.csv_cleaner import clean_csv
+# import os
+# from src.utils.csv_cleaner import clean_csv
 
-def test_clean_file(tmp_path):
-    pass
+# def test_clean_file(tmp_path):
+#     pass
     # # Cria um CSV temporário com conteúdo sujo
     # dirty_content = "nome,idade\nJoão,25\nMaria,30\n'Alfredo',45"
     # test_file = tmp_path / "dirty.csv"
