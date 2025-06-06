@@ -1,0 +1,47 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositório
+        uses: actions/checkout@v3
+
+      - name: Instalar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Criar ambiente virtual
+        run: python -m venv .venv
+
+      - name: Instalar dependências
+        run: |
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -r requirements.txt
+
+      - name: Exportar variáveis de ambiente para Python
+        run: |
+          echo "HOST=${{ secrets.PG_HOST }}" >> $GITHUB_ENV
+          echo "PORT=${{ secrets.PG_PORT }}" >> $GITHUB_ENV
+          echo "USER=${{ secrets.PG_USER }}" >> $GITHUB_ENV
+          echo "PASSWD=${{ secrets.PG_PASSWD }}" >> $GITHUB_ENV
+          echo "DATABASE=${{ secrets.PG_DATABASE }}" >> $GITHUB_ENV
+
+      - name: Rodar testes com pytest (com env exportado)
+        env:
+          HOST: ${{ secrets.PG_HOST }}
+          PORT: ${{ secrets.PG_PORT }}
+          USER: ${{ secrets.PG_USER }}
+          PASSWD: ${{ secrets.PG_PASSWD }}
+          DATABASE: ${{ secrets.PG_DATABASE }}
+        run: |
+          echo "HOST=$HOST"
+          .venv/bin/pytest
