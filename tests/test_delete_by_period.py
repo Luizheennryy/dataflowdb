@@ -1,41 +1,34 @@
-# import pytest
-# from src.database.delete_by_period import delete_by_period
-# from src.database.connection import get_connection
+import pytest
+from src.database.connection import get_connection
+from src.database.delete_by_period import delete_by_period
 
-# @pytest.fixture
-# def connection():
-#     conn = get_connection()
-#     yield conn
-#     conn.rollback()
-#     conn.close()
+TEST_TABLE = "test_table"
 
-# def test_delete_by_period_removes_correct_rows(connection):
-#     table_name = "test_delete_table"
-#     column = "ano_mes"
-#     delete_value = "202505"
+@pytest.fixture(scope="function")
+def connection():
+    conn = get_connection()
+    yield conn
+    conn.rollback()
+    conn.close()
 
-#     # Cria tabela temporária e insere dados
-#     with connection.cursor() as cur:
-#         cur.execute(f"""
-#             CREATE TEMP TABLE {table_name} (
-#                 id SERIAL PRIMARY KEY,
-#                 nome TEXT,
-#                 {column} TEXT
-#             );
-#         """)
-#         cur.execute(f"""
-#             INSERT INTO {table_name} (nome, {column}) VALUES
-#             ('João', '202505'),
-#             ('Maria', '202504');
-#         """)
-#         connection.commit()
+def test_delete_by_period_removes_correct_rows(connection):
+    cursor = connection.cursor()
 
-#     # Executa a função de delete
-#     delete_by_period(connection, table_name, column, delete_value)
+    # Setup: Insere duas linhas, com períodos diferentes
+    cursor.execute(f"INSERT INTO {TEST_TABLE} (id, descricao) VALUES (1, '202401'), (2, '202506')")
+    connection.commit()
 
-#     # Verifica se só resta o valor 202504
-#     with connection.cursor() as cur:
-#         cur.execute(f"SELECT COUNT(*) FROM {table_name} WHERE {column} = %s", (delete_value,))
-#         remaining = cur.fetchone()[0]
+    # Verifica que os dados foram inseridos
+    cursor.execute(f"SELECT COUNT(*) FROM {TEST_TABLE}")
+    total_before = cursor.fetchone()[0]
+    assert total_before == 2
 
-#     assert remaining == 0
+    # Executa o delete com filtro por periodo
+    delete_by_period(connection, TEST_TABLE, "descricao", "202401")
+
+    # Verifica se apenas o valor correspondente foi removido
+    cursor.execute(f"SELECT descricao FROM {TEST_TABLE}")
+    result = [row[0] for row in cursor.fetchall()]
+    
+    assert "202401" not in result
+    assert "202506" in result
