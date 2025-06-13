@@ -11,7 +11,7 @@ def get_connection():
       HOST, PORT, USER, PASSWD, DATABASE.
     """
     host = os.getenv("HOST")
-    port = os.getenv("PORT")
+    port = int(os.getenv("PORT"))
     user = os.getenv("USER")
     passwd = os.getenv("PASSWD")
     database = os.getenv("DATABASE")
