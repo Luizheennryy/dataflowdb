@@ -1,4 +1,4 @@
-name: Run Pytest (Basic Tests Only)
+name: Run Pytest (All Valid Tests)
 
 on:
   push:
@@ -11,6 +11,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    env:
+      HOST: ${{ secrets.PG_HOST }}
+      PORT: ${{ secrets.PG_PORT }}
+      USER: ${{ secrets.PG_USER }}
+      PASSWD: ${{ secrets.PG_PASS }}
+      DATABASE: ${{ secrets.PG_DB }}
 
     steps:
       - name: Checkout code
@@ -28,7 +35,11 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run pytest on specific tests
+      - name: Run Pytest for selected files
         run: |
           source venv/bin/activate
-          pytest tests/test_clean_file.py tests/test_file_validation.py
+          PYTHONPATH=src pytest -v \
+            tests/test_clean_file.py \
+            tests/test_file_validation.py \
+            tests/test_csv_to_postgres.py \
+            tests/test_refresh_materialized_views.py

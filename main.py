@@ -3,26 +3,26 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-from src.config.log                 import logger
-from src.database.connection        import get_connection
-from src.database.truncate_table    import truncate_table
-from src.database.delete_by_period  import delete_by_period
-from src.database.refresh_views     import refresh_materialized_views
-from src.pipelines.csv_to_postgres  import run_csv_to_postgres
-from src.utils.file_validation      import is_valid_csv
+from src.config.log                                             import logger
+from src.database.connection                                    import get_connection
+from src.database.truncate_table                                import truncate_table
+from src.database.delete_by_period                              import delete_by_period
+from src.pipelines.refresh_views.refresh_materialized_views     import refresh_materialized_views
+from src.pipelines.csv_to_postgres                              import run_csv_to_postgres
+from src.utils.file_validation                                  import is_valid_csv
 
 BASE_DIR = os.path.join(os.path.expanduser("~"), "Desktop", "Bases")
 
-delete_date = "202506"
+delete_date = "202505"
 
 truncate_config = {
     # "dim_capilaridade": "Dim_Capilaridade.csv",
     # "dim_logins_net": "Dim_Logins_Net.csv",
-    "dim_servicos": "Dim_Servicos.csv"
+    # "dim_servicos": "Dim_Servicos.csv"
 }
 
 table_config = {
-    # "fato_ur": ("fato_ur.csv", "data", delete_date)
+    "fato_ur": ("fato_ur.csv", "data", delete_date)
 }
 
 def main():
