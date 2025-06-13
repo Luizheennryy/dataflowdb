@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      HOST: ${{ secrets.PG_HOST }}
-      PORT: ${{ secrets.PG_PORT }}
-      USER: ${{ secrets.PG_USER }}
-      PASSWD: ${{ secrets.PG_PASS }}
-      DATABASE: ${{ secrets.PG_DB }}
+      HOST: ${{ secrets.HOST }}
+      PORT: ${{ secrets.PORT }}
+      USER: ${{ secrets.USER }}
+      PASSWD: ${{ secrets.PASSWD }}
+      DATABASE: ${{ secrets.DATABASE }}
 
     steps:
       - name: Checkout code
