@@ -14,20 +14,22 @@ def connection():
 def test_refresh_materialized_views(connection):
     cursor = connection.cursor()
 
-    # Cria uma tabela e uma view materializada para teste
-    cursor.execute("DROP TABLE IF EXISTS test_view_table")
+    # Garante que a view e a tabela não existam antes
+    cursor.execute(f"DROP MATERIALIZED VIEW IF EXISTS {TEST_VIEW}")
+    cursor.execute("DROP TABLE IF EXISTS test_view_table CASCADE")
+
+    # Cria a tabela e popula
     cursor.execute("CREATE TABLE test_view_table (id SERIAL PRIMARY KEY, valor TEXT)")
     cursor.execute("INSERT INTO test_view_table (valor) VALUES ('primeiro'), ('segundo')")
 
-    cursor.execute(f"DROP MATERIALIZED VIEW IF EXISTS {TEST_VIEW}")
+    # Cria a view materializada
     cursor.execute(f"CREATE MATERIALIZED VIEW {TEST_VIEW} AS SELECT * FROM test_view_table")
     connection.commit()
 
-    # Executa a função de refresh
+    # Executa o refresh
     refresh_materialized_views([TEST_VIEW])
 
-    # Valida que a view foi atualizada corretamente
+    # Valida os dados
     cursor.execute(f"SELECT COUNT(*) FROM {TEST_VIEW}")
     count = cursor.fetchone()[0]
-
     assert count == 2
